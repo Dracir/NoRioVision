@@ -9,6 +9,8 @@ import org.opencv.core.MatOfInt;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 public class VisionPipeline {
@@ -28,7 +30,17 @@ public class VisionPipeline {
 	
 	public void hsvThreshold(Mat input, Mat out) {		
 		Imgproc.cvtColor(input, out, Imgproc.COLOR_BGR2HSV);
-		Core.inRange(out, config.hsvMinThreshold, config.hsvMaxThreshold, out);
+		Scalar min = new Scalar(config.hueRange.min, config.saturationRange.min, config.valueRange.min);
+		Scalar max = new Scalar(config.hueRange.max, config.saturationRange.max, config.valueRange.max);
+		Core.inRange(out, min, max, out);
+	}
+
+	
+	public void blur(Mat input, Mat out) {		
+		if(config.blur.min == 0 ) return;
+		
+	    Imgproc.boxFilter(input, out, -1, new Size(config.blur.min, config.blur.min));
+	    //Imgproc.GaussianBlur(blurFrame, blurFrame, new Size(3, 3), 2);
 	}
 	
 	

@@ -20,8 +20,8 @@ public class ImagePanel extends JPanel{
     	g.setColor(Color.BLACK);
     	g.drawRect(0, 0, this.getWidth(), this.getHeight());
     	
-    	int imageWidth = 320*2;
-    	int imageHeight = 240*2;
+    	int imageWidth = 320;
+    	int imageHeight = 240;
     	
     	int x = (getWidth() - imageWidth)/2; 
     	int y = (getHeight() - imageHeight)/2; 

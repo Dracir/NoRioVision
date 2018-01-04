@@ -9,12 +9,18 @@ public class VisionFilterConfiguration {
 	//The size to work on, the smaller the faster but also less precise
 	public Size workingImageSize  = new Size(320,240);
 	
-	public Scalar hsvMinThreshold = new Scalar(0,80,50);
-	public Scalar hsvMaxThreshold = new Scalar(12,255,255);
+	//HSV
+	public Range hueRange = new Range(0,12);
+	public Range saturationRange = new Range(80,255);
+	public Range valueRange = new Range(50,255);
+	
+	//blur
+	public Range blur = new Range(2, 2);
+	
 	
 	public boolean externalContourOnly = true;
 	
-	public double minArea = 20;
+	//filter contours
 	public Range targetWidth = new Range(60,1000);
 	public Range targetHeight = new Range(10,1000);
 	public Range targetPerimeter = new Range(0,1000);
@@ -22,7 +28,6 @@ public class VisionFilterConfiguration {
 	public Range targetSolidity = new Range(0,10000);
 	public Range targetVertexCount = new Range(4, 100000);
 	public Range targetRatio = new Range(0, 1);
-	
 	
 	
 	public double[] hueThreshold;

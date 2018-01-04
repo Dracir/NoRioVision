@@ -22,6 +22,7 @@ public class Main {
 	private static Mat webcamFrame;
 	private static Mat resizedFrame;
 	private static Mat hsvFrame;
+	private static Mat blurFrame;
 	private static Mat contourFrame;
 	private static Mat filteredContoursFrame;
 	
@@ -30,11 +31,12 @@ public class Main {
 	
 	public static void main(String[] args) {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-		SetupMainWindow();
+		mainWindow = new MainWindow(config);
 		
 		webcamFrame = new Mat();
 		resizedFrame = new Mat();
 		hsvFrame = new Mat();
+		blurFrame = new Mat();
 		contourFrame = new Mat();
 		filteredContoursFrame = new Mat();
 		
@@ -43,6 +45,7 @@ public class Main {
         
         mainWindow.webcamImagePanel.image = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
         mainWindow.hsvImagePanel.image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+        mainWindow.blurImagePanel.image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
         mainWindow.Find_ContoursPanel.image = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
         mainWindow.Filter_ContoursPanel.image = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
 
@@ -70,11 +73,12 @@ public class Main {
 		ImageUtils.MatToBufferedImage(resizedFrame, mainWindow.webcamImagePanel.image);
 		
 		pipeline.hsvThreshold(resizedFrame, hsvFrame);
-	    Imgproc.GaussianBlur(hsvFrame, hsvFrame, new Size(3, 3), 2);
-	    //Imgproc.cvtColor(hsvFrame, hsvFrame, Imgproc.COLOR_GRAY2RGB);
-	    Imgproc.boxFilter(hsvFrame, hsvFrame, -1, new Size(10, 10));
-	    //Imgproc.cvtColor(hsvFrame, hsvFrame, Imgproc.COLOR_RGB2GRAY);
 		ImageUtils.MatToBufferedImage(hsvFrame, mainWindow.hsvImagePanel.image);
+
+		hsvFrame.assignTo(blurFrame);
+		pipeline.blur(blurFrame, blurFrame);
+	    
+		ImageUtils.MatToBufferedImage(blurFrame, mainWindow.blurImagePanel.image);
 
 	    
 		pipeline.findContours(hsvFrame, contours);
@@ -94,18 +98,6 @@ public class Main {
 		ImageUtils.MatToBufferedImage(filteredContoursFrame, mainWindow.Filter_ContoursPanel.image);
 		
 		mainWindow.refresh();
-	}
-
-	private static void SetupMainWindow() {
-		mainWindow = new MainWindow(config);
-		mainWindow.hueInput.minSpinner.addChangeListener( (c) -> config.hsvMinThreshold.val[0] = (double)mainWindow.hueInput.minSpinner.getValue());
-		mainWindow.hueInput.maxSpinner.addChangeListener( (c) -> config.hsvMaxThreshold.val[0] = (double)mainWindow.hueInput.maxSpinner.getValue());
-
-		mainWindow.saturationInput.minSpinner.addChangeListener( (c) -> config.hsvMinThreshold.val[1] = (double)mainWindow.saturationInput.minSpinner.getValue());
-		mainWindow.saturationInput.maxSpinner.addChangeListener( (c) -> config.hsvMaxThreshold.val[1] = (double)mainWindow.saturationInput.maxSpinner.getValue());
-		
-		mainWindow.valueInput.minSpinner.addChangeListener( (c) -> config.hsvMinThreshold.val[2] = (double)mainWindow.valueInput.minSpinner.getValue());
-		mainWindow.valueInput.maxSpinner.addChangeListener( (c) -> config.hsvMaxThreshold.val[2] = (double)mainWindow.valueInput.maxSpinner.getValue());
 	}
 
 
