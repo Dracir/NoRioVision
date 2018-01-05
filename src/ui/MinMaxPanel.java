@@ -1,5 +1,6 @@
 package ui;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -17,7 +18,7 @@ public class MinMaxPanel extends JPanel{
 	public JSpinner maxSpinner;
 	
 	public MinMaxPanel(String name, SpinnerModel minModel, SpinnerModel maxModel) {
-
+		setBorder(BorderFactory.createTitledBorder("asdasdads"));
 		add(new JLabel(name));
 		
 		minSpinner = new JSpinner(minModel);
@@ -53,13 +54,21 @@ public class MinMaxPanel extends JPanel{
 		
 		minSpinner = new JSpinner(minModel);
 		minSpinner.addChangeListener( (c) -> {
-			if(range.max != range.min) range.min = range.max;
 			range.min = (double)minSpinner.getValue();
+			if(range.max != range.min) {
+				range.max = range.min;
+				maxSpinner.setValue(range.min);
+			}
 		});
 		add(minSpinner);
 		
 		maxSpinner = new JSpinner(maxModel);
-		maxSpinner.addChangeListener( (c) -> {if(range.min != range.max) range.min = range.max;} );
+		maxSpinner.addChangeListener( (c) -> {
+				if(range.min != range.max) {
+					range.min = range.max;
+					minSpinner.setValue(range.min);
+				}
+			} );
 		add(maxSpinner);
 		
 	}

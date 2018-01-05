@@ -1,5 +1,6 @@
 package org.usfirst.frc.team6851.robot.commands.vision;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.opencv.core.Core;
@@ -13,6 +14,8 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
+import vision.ImageUtils;
+
 public class VisionPipeline {
 	
 	VisionFilterConfiguration config;
@@ -22,6 +25,13 @@ public class VisionPipeline {
 		this.config = config;
 	}
 
+	public void doItAll(Mat input, Mat output,ArrayList<MatOfPoint> contours,ArrayList<MatOfPoint> contoursFiltered) {
+		resizeImage(input, output);
+		hsvThreshold(output, output);
+		blur(output, output);
+	    findContours(output, contours);
+		filterContours(contours, contoursFiltered);
+	}
 	
 	public void resizeImage(Mat input, Mat output) {
 		Imgproc.resize(input, output, config.workingImageSize, 0.0, 0.0, Imgproc.INTER_CUBIC);

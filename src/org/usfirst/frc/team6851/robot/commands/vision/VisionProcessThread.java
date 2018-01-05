@@ -1,13 +1,8 @@
 package org.usfirst.frc.team6851.robot.commands.vision;
 
-import java.util.ArrayList;
-
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
 import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.usfirst.frc.team6851.robot.commands.vision.GripPipeline.OutputSteamShownStep;
-import org.usfirst.frc.team6851.robot.utils.MaterialDrawUtils;
+import org.usfirst.frc.team6851.robot.commands.vision.targets.VisionTargetingBase;
 
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
@@ -17,7 +12,7 @@ import edu.wpi.first.wpilibj.CameraServer;
 public class VisionProcessThread extends Thread {
 
 
-	GripPipeline	gripPipeline;
+	VisionPipeline vision;
 	UsbCamera camera;
 	CvSource outputStream;
 	
@@ -25,11 +20,12 @@ public class VisionProcessThread extends Thread {
 	VisionTargetingBase			visionTargetStrategy;
 	
 	
-	Mat				mat;
+	Mat				webcamFrame;
+	Mat				outputFrame;
 	long			nextProcess;
 	CvSink			cvSink;
 	
-	public OutputSteamShownStep 	shownOutput;
+
 	public boolean	showSimpleRects	= true;
 	public boolean	showTarget		= true;
 
@@ -38,11 +34,12 @@ public class VisionProcessThread extends Thread {
 
 	public VisionProcessThread(VisionFilterConfiguration config, UsbCamera camera, CvSource outputStream) {
 		this.config = config;
-		this.gripPipeline = new GripPipeline(config);
+		this.vision = new VisionPipeline(config);
 		this.camera = camera;
 		this.outputStream = outputStream;
 		
-		mat = new Mat();
+		webcamFrame = new Mat();
+		outputFrame = new Mat();
 		nextProcess = 0;
 		
 		// Setup a CvSource. This will send images back to the Dashboard
@@ -59,7 +56,7 @@ public class VisionProcessThread extends Thread {
 			if (System.currentTimeMillis() > nextProcess) {
 				nextProcess = System.currentTimeMillis() + config.msInterval;
 
-				if (cvSink.grabFrame(mat) == 0) {
+				if (cvSink.grabFrame(webcamFrame) == 0) {
 					outputStream.notifyError(cvSink.getError());
 					continue;
 				}
@@ -76,7 +73,7 @@ public class VisionProcessThread extends Thread {
 	}
 
 	private void processImage() {
-		gripPipeline.process(mat,shownOutput);
+		/*vision.doItAll(webcamFrame, outputFrame, contours, contoursFiltered);
 
 		if (showSimpleRects) {
 			int i = 0;
@@ -86,12 +83,12 @@ public class VisionProcessThread extends Thread {
 				i++;
 			}
 		}
-		outputStream.putFrame(gripPipeline.alternativeOutput);
+		outputStream.putFrame(gripPipeline.alternativeOutput);*/
 
 	}
 
 	private void processTargeting() {
-		target = null;
+		/*target = null;
 		targetDistance = 0;
 		if(visionTargetStrategy != null) {
 			ArrayList<MatOfPoint> mops = gripPipeline.filterContoursOutput();
@@ -101,6 +98,6 @@ public class VisionProcessThread extends Thread {
 		if(showTarget)
 			visionTargetStrategy.drawTargetOn(gripPipeline.alternativeOutput);
 		// Give the output stream a new image to display
-		outputStream.putFrame(mat);
+		outputStream.putFrame(mat);*/
 	}
 }

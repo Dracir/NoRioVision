@@ -16,24 +16,17 @@ public class MainWindow extends JFrame{
 
 	private static final long serialVersionUID = 1L;
 	
+	public ImagePanel webcamImagePanel = new ImagePanel("Webcam");
+	public ImagePanel hsvImagePanel = new ImagePanel("HSV filter");
+	public ImagePanel blurImagePanel = new ImagePanel("Blured");
 	
-	/*public MinMaxPanel hueInput;
-	public MinMaxPanel saturationInput;
-	public MinMaxPanel valueInput;
+	public ImagePanel Find_ContoursPanel = new ImagePanel("All contours");
+	public ImagePanel Filter_ContoursPanel = new ImagePanel("Filtered Contours");
+	public ImagePanel TargetPanel = new ImagePanel("Target");
 	
-	public MinMaxPanel targetWidth;
-	public MinMaxPanel targetHeight;
-	public MinMaxPanel targetPerimeter;
-	public MinMaxPanel targetArea;
-	public MinMaxPanel targetSolidity;
-	public MinMaxPanel targetVertexCount;
-	public MinMaxPanel targetRatio;*/
-	
-	public ImagePanel webcamImagePanel = new ImagePanel();
-	public ImagePanel hsvImagePanel = new ImagePanel();
-	public ImagePanel blurImagePanel = new ImagePanel();
-	public ImagePanel Find_ContoursPanel = new ImagePanel();
-	public ImagePanel Filter_ContoursPanel = new ImagePanel();
+	public ImagePanel StabilisedPanel = new ImagePanel("Target Stabiliser");
+	public ImagePanel TargetBPanel = new ImagePanel("Target B");
+	public ImagePanel TargetCPanel = new ImagePanel("Target C");
 	
 	
 	public MainWindow(VisionFilterConfiguration config) {
@@ -62,17 +55,17 @@ public class MainWindow extends JFrame{
 
 		panel.add(new JSeparator());
 		
-		panel.add(new MinMaxPanel("Blur", config.blur, 0, 100,1),true);
+		panel.add(new MinMaxPanel("Blur", config.blur, 0, 100,1,true));
 		
 		panel.add(new JSeparator());
 		
-		panel.add(new MinMaxPanel("Width", config.targetWidth, 0, Integer.MAX_VALUE,1));
-		panel.add(new MinMaxPanel("Height", config.targetHeight, 0, Integer.MAX_VALUE,1));
-		panel.add(new MinMaxPanel("Perimeter", config.targetPerimeter, 0, Integer.MAX_VALUE,1));
-		panel.add(new MinMaxPanel("Area", config.targetArea, 0, Integer.MAX_VALUE,1));
-		panel.add(new MinMaxPanel("Solidity", config.targetSolidity, 0, Integer.MAX_VALUE,1));
-		panel.add(new MinMaxPanel("Vertex Count", config.targetVertexCount, 0, Integer.MAX_VALUE,1));
-		panel.add(new MinMaxPanel("Ratio", config.targetRatio, 0, 1,0.05));
+		panel.add(new MinMaxPanel("Width", config.targetWidth, 0, 1000,1));
+		panel.add(new MinMaxPanel("Height", config.targetHeight, 0, 1000,1));
+		panel.add(new MinMaxPanel("Perimeter", config.targetPerimeter, 0, 1000,1));
+		panel.add(new MinMaxPanel("Area", config.targetArea, 0, 10000,1));
+		panel.add(new MinMaxPanel("Solidity", config.targetSolidity, 0, 100,1));
+		panel.add(new MinMaxPanel("Vertex Count", config.targetVertexCount, 0, 1000000,1));
+		panel.add(new MinMaxPanel("Ratio", config.targetRatio, 0, 100,0.05));
 		
 		return panel;
 	}
@@ -85,6 +78,8 @@ public class MainWindow extends JFrame{
 		panel.add(blurImagePanel);
 		panel.add(Find_ContoursPanel);
 		panel.add(Filter_ContoursPanel);
+		panel.add(TargetPanel);
+		panel.add(StabilisedPanel);
 		
 		return panel;
 	}
@@ -95,6 +90,8 @@ public class MainWindow extends JFrame{
 		blurImagePanel.repaint();
 		Find_ContoursPanel.repaint();
 		Filter_ContoursPanel.repaint();
+		TargetPanel.repaint();
+		StabilisedPanel.repaint();
 	}
 
 
