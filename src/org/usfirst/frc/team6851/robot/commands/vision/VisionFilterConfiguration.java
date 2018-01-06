@@ -15,12 +15,12 @@ public class VisionFilterConfiguration {
 	//public Range valueRange = new Range(50,255);
 	
 	//Cehveux
-	public Range hueRange = new Range(0,30);
-	public Range saturationRange = new Range(0,255);
-	public Range valueRange = new Range(99,255);
+	public Range hueRange = new Range(43,63);
+	public Range saturationRange = new Range(44,99);
+	public Range valueRange = new Range(155,255);
 	
 	//blur
-	public Range blur = new Range(5, 5);
+	public Range blur = new Range(4, 4);
 	
 	
 	public boolean externalContourOnly = true;

@@ -33,12 +33,25 @@ public class Main {
 	
 	private static ArrayList<MatOfPoint> contours = new ArrayList<>();
 	private static ArrayList<MatOfPoint> contoursFiltered = new ArrayList<>();
+	
 	private static ArrayList<PotentialTarget> potTargets = new ArrayList<>();
+	private static ArrayList<PotentialTarget> newTargets = new ArrayList<>();
 	private static ArrayList<PotentialTarget> stabilizedTargets = new ArrayList<>();
+	private static ArrayList<PotentialTarget> ptToRemove = new ArrayList<>();
+	
+	private static ArrayList<Scalar> stabilizedTargetColors = new ArrayList<>();
 	
 	public static void main(String[] args) {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		mainWindow = new MainWindow(config);
+		
+		
+		stabilizedTargetColors.add(new Scalar(255,0,0,255));
+		stabilizedTargetColors.add(new Scalar(255,255,0,255));
+		stabilizedTargetColors.add(new Scalar(0,255,0,255));
+		stabilizedTargetColors.add(new Scalar(0,255,255,255));
+		stabilizedTargetColors.add(new Scalar(0,0,255,255));
+		
 		
 		webcamFrame = new Mat();
 		resizedFrame = new Mat();
@@ -109,43 +122,75 @@ public class Main {
 		ImageUtils.MatToBufferedImage(filteredContoursFrame, mainWindow.Filter_ContoursPanel.image);
 
 		
+		//targetFrame
+		newTargets.clear();
 		resizedFrame.assignTo(targetFrame);
 	    Imgproc.cvtColor(targetFrame, targetFrame, Imgproc.COLOR_RGB2GRAY);
 	    Imgproc.cvtColor(targetFrame, targetFrame, Imgproc.COLOR_GRAY2RGB);
 		InvaderTarget t = new InvaderTarget();
-		t.handle(targetFrame, contoursFiltered,potTargets);
-		ArrayList<PotentialTarget> ptToRemove = new ArrayList<>();
+		t.handle(targetFrame, contoursFiltered, newTargets);
 		int maxTime = 15;
+		for (PotentialTarget toadd : newTargets) {
+			potTargets.add(toadd);
+		}
+			
+		
 		for (PotentialTarget pt : potTargets) {
 			double c = 255.0/maxTime*pt.time;
-			System.out.println(c);
 			t.drawTargetOn(targetFrame, pt, new Scalar(0,255-c,0, 255));
 			pt.time++;
 			if(pt.time > maxTime)
 				ptToRemove.add(pt);
 				
 		}
-		ImageUtils.MatToBufferedImage(targetFrame, mainWindow.TargetPanel.image);
-		
-		
-		resizedFrame.assignTo(stabilisezFrame);
-	    Imgproc.cvtColor(stabilisezFrame, stabilisezFrame, Imgproc.COLOR_RGB2GRAY);
-	    Imgproc.cvtColor(stabilisezFrame, stabilisezFrame, Imgproc.COLOR_GRAY2RGB);
-		ArrayList<PotentialTarget> ptToRemove = new ArrayList<>();
-		
-		for (PotentialTarget pt : potTargets) {
-			double c = 255.0/maxTime*pt.time;
-			System.out.println(c);
-			t.drawTargetOn(targetFrame, pt, new Scalar(0,255-c,0, 255));
-			pt.time++;
-			if(pt.time > maxTime)
-				ptToRemove.add(pt);
-				
-		}
+
 		for (PotentialTarget toremove: ptToRemove) {
 			potTargets.remove(toremove);
 		}
 		ImageUtils.MatToBufferedImage(targetFrame, mainWindow.TargetPanel.image);
+		
+		
+		// stabilisezFrame
+		resizedFrame.assignTo(stabilisezFrame);
+	    Imgproc.cvtColor(stabilisezFrame, stabilisezFrame, Imgproc.COLOR_RGB2GRAY);
+	    Imgproc.cvtColor(stabilisezFrame, stabilisezFrame, Imgproc.COLOR_GRAY2RGB);
+	    
+	    for (PotentialTarget newTarget: newTargets) {
+	    	PotentialTarget matchingTarget = null;
+	    	int nbMatch = 0;
+	    	for (PotentialTarget stableTarget: stabilizedTargets) {
+	    		if(stableTarget.similarTo(newTarget)) {
+	    			matchingTarget = stableTarget;
+	    			nbMatch++;
+	    		}
+	    	}
+	    	if(matchingTarget == null) {
+	    		stabilizedTargets.add(newTarget);
+	    	}else{
+	    		matchingTarget.replaceBy(newTarget);
+	    		newTarget.time = 0;
+	    	}
+		}
+	    
+		ptToRemove.clear();
+		
+		int colorIndex = 0;
+		for (PotentialTarget pt : stabilizedTargets) {
+			Scalar c = new Scalar(255,255,255,255);
+			if(colorIndex < stabilizedTargetColors.size()) {
+				c = stabilizedTargetColors.get(colorIndex);
+				colorIndex++;
+			}
+			t.drawTargetOn(stabilisezFrame, pt, c);
+			pt.time++;
+			if(pt.time > maxTime)
+				ptToRemove.add(pt);
+		}
+
+		for (PotentialTarget toremove: ptToRemove) {
+			stabilizedTargets.remove(toremove);
+		}
+		ImageUtils.MatToBufferedImage(stabilisezFrame, mainWindow.StabilisedPanel.image);
 		
 		mainWindow.refresh();
 	}
